@@ -1,4 +1,4 @@
-package com.example.calculator.arithmeticutils;
+package me.stefan456789.calculator.arithmeticutils;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class PostfixConverter {
     }
 
     public String getPostfixExpression(){
-        return "";
+        return postfix.get(0);
     }
 
     public List<String> getPostfixAsList(){

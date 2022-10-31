@@ -1,4 +1,4 @@
-package com.example.calculator;
+package me.stefan456789.calculator;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,8 +7,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.calculator.arithmeticutils.PostfixCalculator;
-import com.example.calculator.arithmeticutils.PostfixConverter;
+import me.stefan456789.calculator.arithmeticutils.PostfixCalculator;
+import me.stefan456789.calculator.arithmeticutils.PostfixConverter;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case "=":
                 PostfixConverter conv = new PostfixConverter(term.toString());
-                //PostfixCalculator calc = new PostfixCalculator();
-                //term = new StringBuilder(conv.getPostfixAsList().toArray());
+                PostfixCalculator calc = new PostfixCalculator();
+                term = new StringBuilder(conv.getPostfixAsList().toArray());
 
                 break;
             case ".":

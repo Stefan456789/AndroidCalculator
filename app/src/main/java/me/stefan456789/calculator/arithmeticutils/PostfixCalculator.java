@@ -1,4 +1,4 @@
-package com.example.calculator.arithmeticutils;
+package me.stefan456789.calculator.arithmeticutils;
 
 import java.math.BigDecimal;
 import java.util.ArrayDeque;
