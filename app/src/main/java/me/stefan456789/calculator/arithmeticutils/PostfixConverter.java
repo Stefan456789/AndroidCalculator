@@ -1,10 +1,14 @@
 package me.stefan456789.calculator.arithmeticutils;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
+import java.util.stream.Collector;
 
 public class PostfixConverter {
     private String infix;
@@ -17,41 +21,57 @@ public class PostfixConverter {
     }
 
     private void convertExpression(){
-        List<String> s = Arrays.asList(infix.split(" "));
 
-        for (int i = 0; i < s.size(); i++){
+        for (int i = 0; i < infix.length(); ++i){
+            char operator = infix.charAt(i);
 
-            //Ist Zahl
-            try {
-                postfix.add("" + Double.parseDouble(s.get(i)));
-                s.remove(i);
-            }catch (NumberFormatException ex){}
-
-            //Ist Operator
-            if (s.get(i).equals("+") || s.get(i).equals("-") || s.get(i).equals("*") || s.get(i).equals("/")){
-                while (!stack.isEmpty() &&
-                        (stack.getLast().equals('+') || stack.getLast().equals('-') || stack.getLast().equals('*') || stack.getLast().equals('/')) &&
-                        i <= getPrecedence(stack.getLast())){
-                    postfix.add(s.get(i));
-                    s.remove(i);
+            // Ist Zahl
+            if (Character.isLetterOrDigit(operator)){
+                StringBuilder number = new StringBuilder();
+                while (infix.length() > i && (Character.isDigit(infix.charAt(i)) || infix.charAt(i) == '.')){
+                    number.append(infix.charAt(i));
+                    i++;
                 }
-                stack.add(s.get(i).charAt(0));
-                s.remove(i);
-            }
-            if (s.get(i).equals(")")){
-                while (!stack.getLast().equals('(')){
-                    postfix.add("" + stack.pop());
-                }
-                s.remove(i);
+                i--;
+                postfix.add(number.toString());
             }
 
+            // Ist (
+            else if (operator == '(')
+                stack.push(operator);
 
+            // Ist )
+            else if (operator == ')') {
+
+                while (!stack.isEmpty() && stack.peek() != '(') {
+                    postfix.add("" + stack.peek());
+                    stack.pop();
+
+                }
+                stack.pop();
+            }
+
+            // ist Operator
+            else
+            {
+                while (!stack.isEmpty() && getPrecedence(operator) <= getPrecedence(stack.peek())) {
+                    postfix.add("" + stack.peek());
+                    stack.pop();
+
+                }
+                stack.push(operator);
+            }
         }
-        while (!stack.isEmpty()){
-            postfix.add("" + stack.getLast());
+        while (!stack.isEmpty()) {
+            if (stack.peek() == '('){
+                postfix.clear();
+                return;
+            }
+
+
+            postfix.add("" + stack.peek());
+            stack.pop();
         }
-
-
     }
 
     private void InputToStack(char input){
@@ -59,18 +79,29 @@ public class PostfixConverter {
     }
 
     private int getPrecedence(char up){
-        return Arrays.asList(stack.toArray()).indexOf(up);
+        switch (up) {
+            case '+':
+            case '-':
+                return 1;
+            case '*':
+            case '/':
+                return 2;
+        }
+
+        return -1;
     }
 
     private void clearStack(){
-
+        stack.clear();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public String getPostfixExpression(){
-        return postfix.get(0);
+        return postfix.stream().collect(StringBuilder::new, StringBuilder::append, StringBuilder::append).toString();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public List<String> getPostfixAsList(){
-        return postfix;
+        return postfix.stream().collect(Collector.of(ArrayList<String>::new, (x, y) -> x.add("" + y), (a, b) -> {a.addAll(b); return a;}));
     }
 }

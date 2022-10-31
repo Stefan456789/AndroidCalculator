@@ -1,7 +1,9 @@
 package me.stefan456789.calculator;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -20,28 +22,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void onEnterNumber(View view){
         Button b = (Button) view;
         String input = b.getText().toString();
-
+        TextView output = findViewById(R.id.result);
         switch (input){
-            case "CLEAR":
+            case "Clear":
                 term = new StringBuilder();
                 break;
             case "=":
                 PostfixConverter conv = new PostfixConverter(term.toString());
-                PostfixCalculator calc = new PostfixCalculator();
-                term = new StringBuilder(conv.getPostfixAsList().toArray());
-
-                break;
-            case ".":
-                term.append(input);
+                PostfixCalculator calc = new PostfixCalculator(conv.getPostfixAsList());
+                term = new StringBuilder();
+                output.setText(calc.getResult() == null ? "Error" : calc.getResult().toPlainString());
                 break;
             default:
-                if (!(term.length() == 0) && !(term.charAt(term.length()-1) == '.'))
-                    term.append(" ");
                 term.append(input);
+                break;
         }
-        ((TextView)findViewById(R.id.textView)).setText(term);
+        ((TextView)findViewById(R.id.input)).setText(term);
     }
 }
